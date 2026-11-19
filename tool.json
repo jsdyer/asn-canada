@@ -1,16 +1,45 @@
 {
-  "id": "coolcode-tool-template",
-  "title": "CoolCode Tool Starter",
-  "description": "A browser-only example that trims lines and removes exact duplicates.",
-  "category": "security",
-  "tags": ["text", "lines", "duplicates"],
-  "icon": "scan-search",
-  "url": "/coolcode-tool-template/",
-  "source": "https://github.com/jsdyer/coolcode-tool-template",
+  "id": "asn-canada",
+  "title": "ASN Canada",
+  "description": "Find a Canadian-registered network and compare its visible IPv4 and IPv6 announcements.",
+  "category": "liminal-tools",
+  "tags": [
+    "ASN",
+    "BGP",
+    "RIPE",
+    "internet routing",
+    "Canada"
+  ],
+  "icon": "network",
+  "url": "/asn-canada/",
+  "source": "https://github.com/jsdyer/asn-canada",
   "hosting": "project",
   "access": "browser",
   "data_info": {
-    "mode": "local",
-    "detail": "The browser reads the text you paste and compares its lines."
+    "mode": "snapshot",
+    "detail": "RIPEstat lists Canadian ASN registrations and routing visibility. RIPE RIS supplies prefix counts by family and advertisement length.",
+    "cadence": "Weekly",
+    "probes": [
+      {
+        "url": "https://coolcode.ca/asn-canada/data/status.json",
+        "path": [
+          "registry"
+        ],
+        "label": "Registry date",
+        "count_at": {
+          "path": [
+            "count"
+          ],
+          "unit": "registered ASNs"
+        }
+      },
+      {
+        "url": "https://coolcode.ca/asn-canada/data/status.json",
+        "path": [
+          "retrieved"
+        ],
+        "label": "Data retrieved"
+      }
+    ]
   }
 }

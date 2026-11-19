@@ -1,21 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanLines } from '../web/model.mjs';
-test('trims, removes blanks and preserves first-seen order', () => {
-  assert.deepEqual(cleanLines('  Halifax\nLangley\nHalifax\n\nVancouver  '), {
-    text: 'Halifax\nLangley\nVancouver', count: 3, removed: 1,
-  });
-});
-test('supports Windows and old Mac line endings', () => {
-  assert.equal(cleanLines('a\r\nb\ra').text, 'a\nb');
-});
-test('empty text and whitespace produce an empty result', () => {
-  assert.deepEqual(cleanLines(' \n\t'), { text: '', count: 0, removed: 0 });
-});
-test('preserves case and Unicode', () => {
-  assert.equal(cleanLines('Québec\nquébec\n東京\nQuébec').text, 'Québec\nquébec\n東京');
-});
-test('treats markup as ordinary text', () => {
-  assert.equal(cleanLines('<script>alert(1)</script>\n<script>alert(1)</script>').text, '<script>alert(1)</script>');
-});
-test('rejects non-text input', () => { assert.throws(() => cleanLines(null), TypeError); });
+import {matches,selectedCount} from '../web/model.mjs';
+const r=[[852,'TELUS',true,{'16':2},{'32':1}],[1,'Other',false,{},{}]];
+test('accepts exact ASN, mixed-case name and registry filters',()=>{assert.equal(matches(r,'as852','all','both','asn')[0][0],852);assert.equal(matches(r,'tel','yes','v6','size').length,1);assert.equal(matches(r,'','no','v4','asn').length,0)});
+test('families preserve threshold zero and add independently',()=>{assert.equal(selectedCount(r[0],'both'),3);assert.equal(selectedCount(r[1],'v6'),0)});

@@ -29,22 +29,24 @@ def main():
                 errors = []
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 page.goto(f"http://127.0.0.1:{server.server_port}/example-tool/")
-                page.locator("#sample").click()
-                assert page.locator("#output").input_value() == "Halifax\nLangley\nVancouver"
-                assert "1 duplicate removed" in page.locator("#status").inner_text()
-                page.locator("#input").fill('<img src=x onerror="alert(1)">\n<img src=x onerror="alert(1)">')
-                assert page.locator("#output").input_value() == '<img src=x onerror="alert(1)">'
-                assert page.locator("img").count() == 0
-                page.locator("#clear").click()
-                assert page.locator("#output").input_value() == ""
-                page.locator("#sample").click()
+                page.wait_for_function("document.querySelector('#title').textContent.includes('AS852')")
+                page.fill('#query','TELUS')
+                assert page.locator('#network option').count() >= 1
+                page.select_option('#family','v4')
+                assert page.locator('#lengths').get_by_text('IPv4 /24',exact=True).count() == 1
+                page.fill('#query','no-such-asn-name-here')
+                assert page.locator('#title').inner_text() == 'No matching network'
+                page.fill('#query','AS852')
+                with page.expect_download() as out:
+                    page.click('#export')
+                assert out.value.suggested_filename.endswith('.csv')
                 page.screenshot(path=str(screenshots / "desktop.png"), full_page=True)
                 page.set_viewport_size({"width": 390, "height": 844})
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
                 assert not errors, errors
                 browser.close()
-            print("Browser checks passed: project subpath, sample, clear, safe text and mobile layout")
+            print("Browser checks passed: source-backed interaction, CSV and mobile layout")
         finally:
             server.shutdown()
 
