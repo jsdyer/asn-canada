@@ -13,3 +13,11 @@ The registry selection uses [RIPEstat’s country-ASN report](https://stat.ripe.
 The IPv4 and IPv6 breakdowns count each exact prefix whose single-number origin matches the ASN and which at least ten [RIPE RIS peers](https://ris.ripe.net/docs/ris-whois/) observed in their combined tables. Default routes and AS-set origins are excluded. These are observed prefix counts. Address space utilization, customer counts and network ownership require different records. Country routing and prefix clocks can differ. The interface displays the date attached to each source.
 
 The weekly GitHub Action refreshes and validates the edition before replacing it. Run `python scripts/refresh.py` to update it, `node --test tests/*.test.mjs` and `python -m unittest discover -s tests` to check it, and `python scripts/build.py` to produce an offline-buildable Pages site.
+
+<!-- schedule-reliability -->
+## Schedule reliability
+
+Public GitHub repositories can have scheduled workflows disabled after 60 days of inactivity. A separate weekly [schedule guard](.github/workflows/schedule-guard.yml) calls GitHub's enable-workflow API for an explicit list of refresh workflows and itself. It can restore workflows disabled for inactivity, preserves manually disabled workflows, and runs independently of collection failures.
+
+This is an interim mitigation, not a scheduling guarantee: GitHub does not document active-workflow renewal as a permanent exemption, and scheduled runs can be delayed or dropped. A scheduler on our own Linux server is the planned independent trigger. The guard does not collect data, create dummy commits, or change source/check timestamps; successful collection and published data freshness still need monitoring.
+<!-- /schedule-reliability -->
